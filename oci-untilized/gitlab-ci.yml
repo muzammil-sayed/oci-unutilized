@@ -1,0 +1,75 @@
+stages:
+  - lint_and_test
+  - build
+
+services:
+  - name: docker:20.10.21-dind
+    command: ["--tls=false"]
+
+variables:
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_TLS_CERTDIR: ""
+  OCI_IMAGE_NAME: lucid-oci-unutilized
+
+lint:
+  stage: lint_and_test
+  image: registry.gitlab.com/pipeline-components/pylint:latest
+  script:
+    - pylint --exit-zero --load-plugins=pylint_gitlab --output-format=gitlab-codeclimate:codeclimate.json **/*.py
+  artifacts:
+    reports:
+      codequality: codeclimate.json
+    when: always
+    expire_in: "7 days"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - when: never
+  allow_failure: true
+  interruptible: true
+
+test:
+  image: python:3.11-alpine
+  stage: lint_and_test
+  before_script:
+    - cd ./src/
+    - pip install -r requirements.txt
+  script:
+    - pip install pytest-cov
+    - pytest -vv --cov ./src/ --cov-report term --cov-report xml:coverage.xml
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: ./src/coverage.xml
+    when: always
+    expire_in: "7 days"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - when: never
+  interruptible: true
+
+
+build_image_oci:
+  image: docker:20.10.21
+  stage: build
+  variables:
+    AWS_DEFAULT_REGION: us-west-2
+    OCIR_REGISTRY: jed.ocir.io/axbyjduhp8wx
+    IMAGE_NAME: ${OCIR_REGISTRY}/${OCI_IMAGE_NAME}
+    IMAGE_TAG: ${CI_COMMIT_SHORT_SHA}
+    IMAGE_DIR: ./src/
+  script:
+    - apk update && apk add --no-cache python3 py3-pip
+    - pip3 install --upgrade pip
+    - echo "${OCI_REGISTRY_TOKEN}" | base64 -d | docker login --username ${OCI_REGISTRY_USER} --password-stdin ${OCIR_REGISTRY}
+    - docker build --tag ${IMAGE_NAME}:${IMAGE_TAG} $IMAGE_DIR
+    - docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest
+    - docker push ${IMAGE_NAME}:${IMAGE_TAG}
+    - docker push ${IMAGE_NAME}:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
