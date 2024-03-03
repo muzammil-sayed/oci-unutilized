@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCI Resources</title>
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+
+<body class="blue lighten-5">
+    <nav>
+        <div class="nav-wrapper teal darken-4">
+            <a href="#" class="center-align teal-text">OCI Resources</a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <form method="POST" action="/submit">
+            <div class="input-field">
+                <select name="compartment_id" id="compartment_id">
+                    {% for compartment in compartment_path_list %}
+                    <option value="{{ compartment.id }}">{{ compartment.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="compartment_id">Select Compartment</label>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Materialize JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('select').formSelect();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCI Resources Result</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+    <style>
+        .dataTables_wrapper {
+            overflow-x: auto;
+        }
+
+        .dataTables_scrollBody {
+            max-height: 500px; /* Adjust the max-height as needed */
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body class="blue lighten-5">
+        <nav>
+            <div class="nav-wrapper teal darken-4">
+                <a href="#" class="center-align teal-text">OCI Resources</a>
+            </div>
+        </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col s12">
+                <div class="table-responsive">
+                    <table id="ociResultTable" class="responsive-table striped">
+                        <thead>
+                            <tr>
+                                <th>Tenancy</th>
+                                <th>Region</th>
+                                <th>Compartment</th>
+                                <th>Type</th>
+                                <th>Name</th>
+                                <th>State</th>
+                                <th>DB</th>
+                                <th>Shape</th>
+                                <th>OCPU</th>
+                                <th>GBytes</th>
+                                <th>BYOL Status</th>
+                                <th>Volume Attached</th>
+                                <th>Created</th>
+                                <th>Created By</th>
+                                <th>OCID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result_item in result %}
+                            <tr>
+                                <td>{{ result_item['Tenancy'] }}</td>
+                                <td>{{ result_item['Region'] }}</td>
+                                <td>{{ result_item['Compartment'] }}</td>
+                                <td>{{ result_item['Type'] }}</td>
+                                <td>{{ result_item['Name'] }}</td>
+                                <td>{{ result_item['State'] }}</td>
+                                <td>{{ result_item['DB'] }}</td>
+                                <td>{{ result_item['Shape'] }}</td>
+                                <td>{{ result_item['OCPU'] }}</td>
+                                <td>{{ result_item['GBytes'] }}</td>
+                                <td>{{ result_item['BYOLstatus'] }}</td>
+                                <td>{{ result_item['VolAttached'] }}</td>
+                                <td>{{ result_item['Created'] }}</td>
+                                <td>{{ result_item['CreatedBy'] }}</td>
+                                <td>{{ result_item['OCID'] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row center-align">
+            <a href="/" class="btn waves-effect waves-light">Go Back</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#ociResultTable').DataTable({
+                responsive: true
+            });
+        });
+    </script>
+</body>
+
+</html>
