@@ -9,7 +9,7 @@ services:
 variables:
   DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""
-  OCI_IMAGE_NAME: lucid-oci-unutilized
+  OCI_IMAGE_NAME: oci-unutilized
 
 lint:
   stage: lint_and_test
